@@ -39,6 +39,26 @@ CLI 与 `devkeel-templates` 发布在公共 npm。DevKeel 不采集使用数据�
 它们是 **Agent Skills，不是 CLI 子命令**：Claude Code 使用 `/domain-init`、`/verify-init`，
 Codex 使用 `$domain-init`、`$verify-init`，其他平台使用对应的 Skill 入口。
 
+混合技术栈按实际模块识别全部领域，分别记录配置归属、构建入口和运行目录；Android/JNI、Electron/C++、前后端同仓都保留各层。
+CMake 等基础设施本身不视为额外业务项目。
+
+### 原生工程环境与构建
+
+`native-engineering` 为 Conan/CMake 等原生项目提供配置驱动的环境检查、准备、构建和验证。
+先根据项目已有 profiles、presets 和脚本适配 [示例与配置说明](templates/skills/native-engineering/references/configuration.md)，再保存到项目 `.harness/native.json`。
+工作目录可显式指定，也可从构建入口发现；多个候选时停止并列出，不要求目录名为 `code/`。
+
+```bash
+node .harness/skills/native-engineering/scripts/native-engineering.mjs discover --root .
+node .harness/skills/native-engineering/scripts/native-engineering.mjs doctor --root . --profile win-x86-debug
+node .harness/skills/native-engineering/scripts/native-engineering.mjs build --root . --profile win-x86-debug
+```
+
+准备、构建、验证和依赖更新默认只输出计划，追加 `--execute` 才执行已配置命令。
+普通构建保护锁文件；锁更新使用独立 `deps-update` 动作。
+环境检查仅证明当前会话的工具与文件就绪，编译、测试和设备运行分别记录结果。
+该能力是 Skill 与 Node 脚本，不是新的 CLI 子命令。
+
 ## 把想法谈清楚
 
 想探索方向、比较方案或补齐已有设计，可调用 `brainstorming`。Agent 先查代码与约束，

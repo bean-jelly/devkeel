@@ -30,6 +30,9 @@ OpenSpec 在 DevKeel 根项目集中协调；子项目在自身目录执行代�
 `domain-init` 扫描现状并分类维护 docs、rules、skills 和 agents；`verify-init` 补齐已确认的
 测试基建。两者复用同一套测试规则与测试说明，不各自生成一套命令或门槛。
 
+混合模块保留全部领域与各自构建入口。
+`native-engineering` 使用项目显式配置的工具、工作目录和命令提供原生环境与构建入口；配置格式与操作边界见 [原生工程能力](../templates/skills/native-engineering/SKILL.md)。
+
 旧任务产物按需手动复制归档；当前有效的项目知识继续保留在 docs 中。
 CLI 自动识别平台入口和仓库角色，无需维护 `.harness/config.yml`，具体规则见
 [安装指南](../web/public/install.md#1-确认项目与平台)。

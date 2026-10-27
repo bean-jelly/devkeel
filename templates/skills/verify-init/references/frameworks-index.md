@@ -1,6 +1,9 @@
 # 官方文档定位方法论
 
-Phase 3 脚手架产出前，按本方法论定位每个要补齐框架的官方文档，作为配置产出的权威来源。本文件不内置任何框架的固定 URL 或 config —— 那些会随版本过期且覆盖不了真实技术栈多样性。Agent 凭项目现状的包名，动态定位当前版本的官方文档。
+Phase 3 脚手架产出前，按本方法论定位每个要补齐框架的官方文档，作为配置产出的权威来源。
+本文件不内置任何框架的固定 URL 或 config —— 那些会随版本过期且覆盖不了真实技术栈多样性。
+Agent 凭项目现状的包名，动态定位当前版本的官方文档。
+文档引用与目标项目路径的区别见[读取路径约定](../SKILL.md#read-first)。
 
 ## 定位步骤（从项目现状出发）
 
@@ -9,14 +12,18 @@ Phase 3 脚手架产出前，按本方法论定位每个要补齐框架的官方
 从项目的依赖清单中取出要安装/已声明的包名：
 
 | 生态 | manifest 位置 | 字段 |
-|------|--------------|------|
+|------|--------|------|
 | Node.js | `package.json` | `dependencies` / `devDependencies` |
 | Python | `pyproject.toml` / `requirements*.txt` | `[project.dependencies]` / 依赖行 |
 | Go | `go.mod` | `require` 块 |
 | Rust | `Cargo.toml` | `[dependencies]` |
-| Java | `pom.xml` / `build.gradle` | `<dependencies>` / `dependencies {}` |
+| Java/Kotlin       | `pom.xml` / `build.gradle` / `build.gradle.kts`     | `<dependencies>` / `dependencies {}`                                    |
+| C/C++             | `conanfile.py` / `conanfile.txt` / `CMakeLists.txt` | 实际 Conan requirements 与 CMake target；CTest 配置用于定位已有验证入口 |
+| Electron 原生模块 | `package.json` 与 `binding.gyp` / `CMakeLists.txt`  | Node-API/N-API 依赖及原生构建 target                                    |
 
-要补齐的框架由 Phase 1 的 `stack-matrix` 推荐 + `detection-signals` 的缺口判定决定。取到包名后，以下一步定位官方文档。
+要补齐的框架由 Phase 1 的[验证入口映射](stack-matrix.md)推荐与[检测信号](detection-signals.md)的缺口判定决定。
+取到包名后，以下一步定位官方文档。
+原生栈环境和 Conan/CMake 操作读取 [原生工程能力](../../native-engineering/SKILL.md)，复用其配置与执行入口。
 
 ### 2. 定位官方文档源（按优先级）
 
@@ -37,7 +44,7 @@ Phase 3 脚手架产出前，按本方法论定位每个要补齐框架的官方
 - **scripts 约定** — 官方推荐的执行命令（test / coverage / watch）
 - **覆盖率/超时最佳实践** — 官方文档中的推荐配置项（如 vitest `coverage` provider、Playwright `use.trace`、pytest fixture scope）
 
-提取后交 `scaffolding-principles.md` 清单核对产出，不直接照搬。
+提取后交[脚手架原则](scaffolding-principles.md)清单核对产出，不直接照搬。
 
 ## fetch 链（context7 首选非必需）
 
@@ -62,7 +69,7 @@ Phase 3 脚手架产出前，按本方法论定位每个要补齐框架的官方
   不写入假定存在的 config、scripts 或门槛
 - **向用户显式提示** —— 输出「未能获取 `<框架>` 官方文档，config 请手动补」，把不确定的部分明确交还用户
 
-降级语义详见 SKILL.md Hard Rule 4。
+降级语义详见[技能入口](../SKILL.md)的 Hard Rule 4。
 
 ## context7 使用方式
 

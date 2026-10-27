@@ -1,6 +1,9 @@
 # 检测信号表
 
-Phase 1 按「领域检测 → 技术栈细化 → 框架已存在检测」三层扫描。检测按优先级从高到低匹配，多领域命中取并集。
+Phase 1 按「领域检测 → 技术栈细化 → 框架已存在检测」三层扫描。
+对实际模块及配置 owner 收集全部信号并取并集，记录模块路径、领域、manifest/构建入口和运行目录。
+工作目录依据项目发现与明确配置确定，多个候选交由主 Agent 处理，不默认选 `code/` 或根目录。
+表中的项目文件、模式与目录属于相应模块；文档引用按[读取路径约定](../SKILL.md#read-first)解析。
 
 ## 领域检测信号
 
@@ -27,11 +30,20 @@ Phase 1 按「领域检测 → 技术栈细化 → 框架已存在检测」三�
 ### 移动端
 
 | 信号 | 检测方式 | 推断领域 |
-|------|----------|----------|
+|------|---------|---------|
 | `package.json` + react-native | 依赖扫描 | react-native |
 | `pubspec.yaml` | 文件存在 | flutter |
 | `*.xcodeproj` / `Package.swift` | 文件存在 | ios-swift |
-| `build.gradle` + android | 文件+依赖 | android |
+| `build.gradle` / `build.gradle.kts` + Android 插件或 Android 源集 | 文件+依赖/配置 | android                                    |
+| `build.gradle.kts` + Kotlin 插件或 Kotlin 源码                    | 文件+依赖/配置 | 不新增领域标签；记录模块的 Kotlin 语言属性 |
+
+Android 的 Kotlin DSL、JNI/NDK 与 Java/Kotlin 层属于同一模块时分别记录语言/原生构建入口，不拆成独立业务项目。
+
+### 桌面宿主
+
+| 信号 | 检测方式 | 推断领域 |
+|------|---------|---------|
+| `package.json` 依赖含 `electron` / `tauri` | 依赖与启动入口 | desktop；同时保留前端、Node 与独立原生进程领域，不要求存在 Node-API addon |
 
 ### CLI / 库
 
@@ -43,6 +55,17 @@ Phase 1 按「领域检测 → 技术栈细化 → 框架已存在检测」三�
 | `package.json` + `main`/`exports` 且无 `bin` 无前端框架 | 导出检测 | library-node |
 | `pyproject.toml` `[lib]` / 纯库 `setup.py` | manifest 检测 | library-python |
 
+### 系统 / 原生模块
+
+| 信号 | 检测方式 | 推断领域 |
+|------|---------|---------|
+| `CMakeLists.txt` / `*.vcxproj` + C/C++ 源码或原生目标              | 构建入口+源/目标   | cpp                                                                |
+| `conanfile.py` / `conanfile.txt` + 原生目标                        | 包配置+构建目标    | cpp 栈的依赖管理线索                                               |
+| CMake/Conan/CTest/Gaia 配置但无对应语言源码或原生目标              | 配置线索           | 仅记为基础设施，不单独推断业务子项目                               |
+| Node-API / N-API / node-addon-api / node-gyp / CMake.js + 原生源码 | 依赖+构建入口+源码 | cpp 与宿主实际领域，按 owner 记录；Node addon 不自动归类为 desktop |
+
+系统/C++、Electron 与原生桥可执行验证位置见[验证入口映射](stack-matrix.md)；环境与 Conan/CMake 操作读取[原生工程能力](../../native-engineering/SKILL.md)。
+
 ### Monorepo 检测
 
 | 信号 | 检测方式 | 处理方式 |
@@ -50,17 +73,17 @@ Phase 1 按「领域检测 → 技术栈细化 → 框架已存在检测」三�
 | `pnpm-workspace.yaml` / `lerna.json` / `nx.json` | 文件存在 | 识别 workspace 共享配置与各子项目的配置归属 |
 | 根目录 + `packages/` / `apps/` | 目录结构 | 分别检测根项目与各子项目技术栈 |
 
-根项目与子项目使用相同检测流程。先读取各自 AGENTS 和测试文档，按 manifest、配置与
-scripts 确定依赖 owner、运行目录和已有能力；共享 lockfile 不证明每个子项目都已就绪。
-`.gitmodules` 或 git submodule 信息出现时，根项目仍检测自身及跨项目验证，子模块维护自身
-领域知识。仅写入已确认的作用域，不递归安装到所有子项目。
+根项目与子项目使用相同检测流程。
+先读取各自 AGENTS 和测试文档，按 manifest、配置与 scripts 确定模块路径、领域、依赖 owner、构建入口、运行目录和已有能力；共享 lockfile 不证明每个子项目都已就绪。
+`.gitmodules` 或 git submodule 信息出现时，根项目仍检测自身及跨项目验证，子模块维护自身领域知识。
+仅写入已确认的作用域，不递归安装到所有子项目。
 
 ## 技术栈细化识别
 
 确定领域后进一步检测框架版本与构建工具：
 
 - **框架版本** — React 18 vs 19、Vue 2 vs 3、Spring Boot 2 vs 3
-- **构建工具** — Vite/Webpack/Rspack、Maven/Gradle
+- **构建工具** — Vite/Webpack/Rspack、Maven/Gradle（含 Kotlin DSL）、CMake/Conan/CTest
 - **包管理器** — pnpm/yarn/npm（决定安装命令前缀）、pip/uv/poetry、go mod、maven/gradle
 
 包管理器检测优先级：`pnpm-lock.yaml` → `yarn.lock` → `package-lock.json` → 无锁文件默认 npm。Python 侧 `uv.lock` → `poetry.lock` → `requirements.txt`。
@@ -141,6 +164,7 @@ backend-node / backend-python / backend-go / backend-java-spring
 react-native / flutter / ios-swift / android
 cli-node / cli-rust / cli-go
 library-node / library-python
+cpp / desktop
 custom:<用户自定义>
 ```
 

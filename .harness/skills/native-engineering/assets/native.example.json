@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "tools": [
+    {
+      "name": "Conan 2",
+      "command": ["conan", "--version"],
+      "minVersion": "2.0.0",
+      "maxVersionExclusive": "3.0.0"
+    },
+    {
+      "name": "CMake",
+      "command": ["cmake", "--version"],
+      "minVersion": "3.31.0"
+    }
+  ],
+  "profiles": {
+    "win-x86-debug": {
+      "workingDirectory": ".",
+      "protectedFiles": ["conan.lock"],
+      "commands": {
+        "prepare": [
+          {
+            "name": "Install reviewed local Conan configuration",
+            "command": [
+              "conan",
+              "config",
+              "install",
+              "toolchains/conan-config",
+              "--type",
+              "dir"
+            ]
+          }
+        ],
+        "build": [
+          {
+            "name": "Install dependencies",
+            "command": [
+              "conan",
+              "install",
+              ".",
+              "-pr:h",
+              "win-x86-msvc142",
+              "--lockfile=conan.lock",
+              "--build=missing",
+              "-s",
+              "build_type=Debug"
+            ],
+            "timeoutMs": 600000
+          },
+          {
+            "name": "Configure CMake (Visual Studio multi-config example)",
+            "command": ["cmake", "--preset", "conan-default", "--fresh"]
+          },
+          {
+            "name": "Build",
+            "command": ["cmake", "--build", "--preset", "conan-debug"],
+            "timeoutMs": 600000
+          }
+        ],
+        "verify": [
+          {
+            "name": "CTest",
+            "command": [
+              "ctest",
+              "--preset",
+              "conan-debug",
+              "--output-on-failure",
+              "--no-tests=error"
+            ]
+          }
+        ],
+        "deps-update": [
+          {
+            "name": "Re-resolve dependency graph and review lock changes",
+            "command": [
+              "conan",
+              "install",
+              ".",
+              "-pr:h",
+              "win-x86-msvc142",
+              "-s",
+              "build_type=Debug",
+              "--build=missing",
+              "--lockfile=",
+              "--update",
+              "--lockfile-out=conan.lock"
+            ],
+            "timeoutMs": 600000
+          }
+        ]
+      }
+    }
+  }
+}

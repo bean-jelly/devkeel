@@ -1,6 +1,8 @@
 # 领域检测信号表
 
-检测按优先级从高到低匹配，**命中第一个即停止**。
+对每个实际模块及其配置 owner 收集全部命中领域。
+每条记录包含模块路径、领域、manifest/构建入口与运行目录；混合技术栈保留所有领域。
+工作目录按项目发现与明确配置确定，多个候选交回主 Agent 处理，不默认选 `code/` 或仓库根目录。
 
 ## 前端
 
@@ -27,7 +29,8 @@
 | 信号 | 检测方式 | 推断领域 |
 |------|----------|----------|
 | `Package.swift` / `*.xcodeproj` | 文件存在 | ios-swift |
-| `build.gradle` + android | 文件+依赖 | android |
+| `build.gradle` / `build.gradle.kts` + Android 插件或 Android 源集 | 文件+依赖/配置 | android |
+| `build.gradle.kts` + Kotlin 插件或 Kotlin 源码 | 文件+依赖/配置 | 不新增领域标签；记录 Kotlin 语言，Android 归属仍按 Android 插件/源集判断 |
 | `pubspec.yaml` | 文件存在 | flutter |
 | `package.json` + react-native | 依赖扫描 | react-native |
 
@@ -36,7 +39,8 @@
 | 信号 | 检测方式 | 推断领域 |
 |------|----------|----------|
 | `Cargo.toml` | 文件存在 | rust |
-| `CMakeLists.txt` / `*.vcxproj` | 文件存在 | cpp |
+| `CMakeLists.txt` / `*.vcxproj` + C/C++ 源码或原生目标 | 构建入口+源/目标 | cpp |
+| `CMakeLists.txt`、Conan 配置或 CTest 配置但无对应业务源码/目标 | 构建/配置线索 | 仅记录为基础设施，不单独推断 cpp 业务模块 |
 | `*.sln` / `*.csproj` | 文件存在 | dotnet |
 
 ## 工具/库/平台
@@ -51,7 +55,8 @@
 | `Dockerfile` / `docker-compose.yml` 为主入口 | 文件检测 | **devops-infra** |
 | `terraform/` / `*.tf` | 文件检测 | **devops-iac** |
 | `*.proto` + `buf.yaml` / `grpc` | 文件+依赖 | **sdk-grpc** |
-| `electron` / `tauri` in dependencies | 依赖扫描 | **desktop** |
+| `electron` / `tauri` in dependencies | 依赖扫描 | **desktop**；继续扫描同一模块的前端、Node 与原生依赖，全部保留 |
+| Node-API / N-API / node-addon-api / node-gyp / CMake.js 与原生源码 | 依赖+构建入口+源码 | cpp 与宿主实际领域，分别记录 owner 与入口；Node addon 不自动归类为 desktop |
 
 ## Monorepo 检测
 
@@ -60,8 +65,10 @@
 | `pnpm-workspace.yaml` / `lerna.json` / `nx.json` | 文件存在 | 识别共享配置与子项目边界，按已确认范围执行 Phase 2-4 |
 | 根目录 + `packages/` / `apps/` | 目录结构 | 识别共享配置与子项目边界，按已确认范围执行 Phase 2-4 |
 
-根项目维护自身与跨项目知识；子项目按各自技术栈维护领域知识。相同的分类与生成规则适用于
-两者，文档各自落入 `docs/`，跨项目通过链接引用。一次调用只修改已确认的作用域。
+根项目维护自身与跨项目知识；子项目按各自技术栈维护领域知识。
+根目录同时存在 Gaia、CMake 等配置与原生/业务模块时，配置只归属其实际 owner；它不能单独构成新的业务项目。
+相同的分类与生成规则适用于两者，文档各自落入 `docs/`，跨项目通过链接引用。
+一次调用只修改已确认的作用域。
 
 ## Git Submodule 检测
 
@@ -101,13 +108,15 @@ custom:<用户自定义>
 ```
 
 使用 `custom:<标签>` 时，后续 Phase 2/3 的维度适用性矩阵按「通用」列处理，用户可自行调整。
+配置/构建工具本身不是业务领域标签。
 
 ## 细化识别
 
 在确定领域后进一步检测：
 
 - **框架版本** — React 18 vs 19、Spring Boot 2 vs 3、Go 1.21 vs 1.22
-- **构建工具** — Vite/Webpack/Rspack/tsup、Maven/Gradle
+- **构建工具** — Vite/Webpack/Rspack/tsup、Maven/Gradle、Gradle Kotlin DSL、CMake/Conan/CTest
+- **原生桥接** — Electron/Node-API、Android JNI/NDK；与宿主模块分别记录语言和构建入口
 - **测试框架** — Vitest/Jest/Playwright/Cypress、JUnit/TestNG/GoTest
 - **Lint 工具** — ESLint/Biome/oxlint、Checkstyle/SpotBugs/golangci-lint
 - **包管理器** — pnpm/yarn/npm、Maven/Gradle/go mod

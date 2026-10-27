@@ -18,6 +18,55 @@ describe('templates', () => {
   })
 
   describe('copyTemplateSkills', () => {
+    it('should preserve desktop host signals without requiring a native addon in either onboarding flow', () => {
+      for (const skill of ['domain-init', 'verify-init']) {
+        const signals = readTemplateFile(`skills/${skill}/references/detection-signals.md`)
+        const rows = signals.split(/\r?\n/).filter(line => line.startsWith('|'))
+        expect(rows.some(line => /electron/i.test(line) && /tauri/i.test(line) && line.includes('desktop'))).toBe(true)
+        expect(rows.some(line => line.includes('build.gradle.kts') && line.includes('android'))).toBe(true)
+      }
+      const matrix = readTemplateFile('skills/verify-init/references/stack-matrix.md')
+      expect(matrix).toContain('Electron/Tauri 桌面宿主')
+      expect(matrix).toContain('独立 C++ 进程')
+    })
+
+    it('should distribute the complete native engineering package and reachable references', () => {
+      const target = path.join(tmpDir, 'skills')
+      copyTemplateSkills(target)
+      for (const relative of [
+        'SKILL.md', 'agents/openai.yaml', 'scripts/native-engineering.mjs',
+        'references/configuration.md', 'assets/native.example.json',
+      ]) {
+        const packaged = fs.readFileSync(path.join(target, 'native-engineering', relative), 'utf8')
+        expect(packaged).toBe(readTemplateFile(`skills/native-engineering/${relative}`))
+        expect(packaged).toBe(fs.readFileSync(path.join('.harness/skills/native-engineering', relative), 'utf8'))
+      }
+      const references = ['detection-signals.md', 'stack-matrix.md', 'frameworks-index.md']
+      for (const reference of references) {
+        const file = path.join(target, 'verify-init/references', reference)
+        const content = fs.readFileSync(file, 'utf8')
+        const links = [...content.matchAll(/\]\(([^)]+native-engineering[^)]*)\)/g)]
+        expect(links).toHaveLength(1)
+        expect(fs.existsSync(path.resolve(path.dirname(file), links[0]![1]!))).toBe(true)
+      }
+    })
+
+    it('should resolve verify-init document links from their installed locations', () => {
+      const target = path.join(tmpDir, '.harness', 'skills')
+      copyTemplateSkills(target)
+      for (const relative of ['SKILL.md', 'references/frameworks-index.md', 'references/detection-signals.md']) {
+        const file = path.join(target, 'verify-init', relative)
+        const content = fs.readFileSync(file, 'utf8')
+        const links = [...content.matchAll(/\]\(([^)]+)\)/g)]
+          .map(match => match[1]!)
+          .filter(link => !link.includes('://') && !link.startsWith('#'))
+        expect(links.length).toBeGreaterThan(0)
+        for (const link of links) {
+          expect(fs.existsSync(path.resolve(path.dirname(file), link.split('#')[0]!)), `${relative}: ${link}`).toBe(true)
+        }
+      }
+    })
+
     it('should copy skills to target directory', () => {
       const target = path.join(tmpDir, 'skills')
       copyTemplateSkills(target)

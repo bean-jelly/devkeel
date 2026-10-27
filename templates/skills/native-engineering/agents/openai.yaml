@@ -1,0 +1,4 @@
+interface:
+  display_name: "原生工程"
+  short_description: "检查并编排项目已配置的 CMake、Conan 与原生工程命令"
+  default_prompt: "使用 $native-engineering 检查当前原生工程环境与配置，并按已授权动作执行。"

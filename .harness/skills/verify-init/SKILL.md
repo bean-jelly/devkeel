@@ -7,7 +7,7 @@ description: >-
   触发词：验证初始化、测试平台搭建、verify-init、搭建测试基建
 metadata:
   author: "devkeel"
-  version: "2.0.1"
+  version: "2.1.1"
 ---
 
 # Verify Init — 验证层初始化器
@@ -25,13 +25,17 @@ metadata:
 
 ## Read First
 
+文档链接以该 Markdown 文件所在目录为基准；调用文件工具前，先按此基准解析为绝对路径。
+检测信号中的 manifest、文件模式与输出目录属于目标项目或配置 owner；命令中的路径按其明确的工作目录解析。
+跨 Skill 引用仅在需要该能力时读取，并先检查目标存在；缺失时报告入口不可用，继续可执行的本地检测。
+
 按需加载以下参考文档：
 
-- `references/detection-signals.md` — 领域+技术栈+框架已存在检测信号表、降级策略
-- `references/stack-matrix.md` — 领域→技术栈→测试框架映射表（v1 四大类）
-- `references/frameworks-index.md` — 官方文档定位方法论 + fetch 链（context7 首选非必需）
-- `references/scaffolding-principles.md` — 脚手架产出原则 checklist（必含项 + 跨栈注意点）
-- `references/output-formats.md` — 测试规则、文档与 test-verifier agent 格式规范
+- [检测信号](references/detection-signals.md) — 领域、技术栈、已有框架检测与降级策略
+- [验证入口映射](references/stack-matrix.md) — 领域、技术栈与验证入口，包含系统/C++ 和原生桥
+- [官方文档定位](references/frameworks-index.md) — 官方文档定位方法与 fetch 链（context7 首选非必需）
+- [脚手架原则](references/scaffolding-principles.md) — 必含项与跨栈注意点
+- [产出格式](references/output-formats.md) — 测试规则、文档与 test-verifier agent 格式规范
 
 ## 何时使用
 
@@ -78,10 +82,15 @@ Phase 5: 收尾       → 报告 + review 提示 commit
 
 ### 1.1 领域与技术栈识别
 
-读取 `references/detection-signals.md` 和 `references/stack-matrix.md`，先定位当前作用域、
-已有规则和 docs，再按信号表扫描目标目录，推断领域与具体技术栈。
+读取 `references/detection-signals.md` 和 `references/stack-matrix.md`，先定位当前作用域、已有规则和 docs，再按实际模块与配置 owner 扫描全部信号并取并集，不因首个命中停止。
+每个命中记录模块路径、领域、manifest/构建入口与运行目录；混合模块（如 React + Electron + C++、Android + Kotlin DSL + JNI/NDK）保留各自领域与验证入口。
+Gaia、CMake、Conan 等配置线索只有在对应模块存在业务语言/原生目标证据时才用于细化，不单独推断另一个业务子项目。
 
-多领域命中取并集（如 Electron = 前端 + 桌面）。所有信号未命中 → 标 `custom:<标签>`，只整理已确认的基础结构与项目事实，不强制装框架。
+工作目录依据项目发现与明确配置确定。
+存在多个合理候选时列出候选交由主 Agent 处理，不默认选择 `code/` 或仓库根目录；依赖、配置和测试命令分别归属其实际 owner。
+
+所有信号未命中时标 `custom:<标签>`，只整理已确认的基础结构与项目事实，不强制装框架。
+原生模块按 `references/stack-matrix.md` 记录现有验证落点；涉及环境与 Conan/CMake 操作时，读取 [原生工程能力](../native-engineering/SKILL.md)，复用其配置与执行入口。
 
 ### 1.2 已有框架检测与就绪清单
 

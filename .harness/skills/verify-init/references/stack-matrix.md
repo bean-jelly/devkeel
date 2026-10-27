@@ -1,6 +1,8 @@
 # 领域 → 技术栈 → 测试框架映射表
 
-stack-matrix 是 Phase 1 推荐框架的权威来源。v1 覆盖主流四大类（前端/后端/移动端/CLI·库）。每个技术栈给「单元测试 + e2e/API 测试」的默认选型。
+stack-matrix 是 Phase 1 推荐框架的权威来源。
+覆盖前端/后端/移动端/CLI·库及系统/C++、桌面原生桥。
+每个技术栈给出现有验证位置与可选测试工具；优先复用项目已有测试，不强装 GoogleTest。
 
 ## 前端
 
@@ -44,6 +46,18 @@ stack-matrix 是 Phase 1 推荐框架的权威来源。v1 覆盖主流四大类�
 | `[lib]` / 纯库 pyproject | library-python | pytest | — |
 
 **CLI 共性**：集成测试用「编译后真实 bin 子进程执行 + 断言 stdout/exit code」；库只做单测，无 e2e 段。
+
+## 系统 / C++ 与桌面原生桥
+
+| 信号 | 领域 | 优先检查的可执行验证位置 | 说明 |
+|------|------|---------|---------|
+| CMake + C/C++ targets | cpp | CTest 注册的测试、项目已有 test target 或测试脚本 | 从实际 CMake preset/target 和运行目录确认入口；不默认安装 GoogleTest |
+| Conan + CMake 原生目标 | cpp | Conan profile/install 之后项目已有 CMake/CTest 测试入口 | 环境与构建步骤见[原生工程能力](../../native-engineering/SKILL.md) |
+| Electron/Tauri 桌面宿主 | desktop | 主进程/renderer 既有测试、应用启动与 IPC 集成入口 | 可与前端、Node addon 或独立 C++ 进程组合；桌面验证不依赖必须存在 addon |
+| Electron + Node-API/N-API/node-addon-api 原生模块 | desktop + cpp | Electron/Node 层既有测试 + 原生模块构建/CTest 或项目集成测试入口 | 分别记录 JS/TS 与 C++ 的 manifest、构建入口、测试命令和运行目录 |
+| Android + Kotlin DSL + JNI/NDK | android + cpp | Gradle 单元/instrumented 测试 + CMake/NDK 目标的既有测试入口 | Kotlin DSL、Java/Kotlin 与 JNI 归属同一 Android 模块时不重复当成独立项目 |
+
+若未发现测试框架，先记录现有构建和可执行验证入口，再依据项目既有测试约定提出候选；没有证据时不强加 GoogleTest 或其他框架。
 
 ## Monorepo 处理
 

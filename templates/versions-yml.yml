@@ -19,8 +19,9 @@ skills:
   openspec-onboard: "2.4"
   openspec-sync-specs: "2.2"
   openspec-verify-change: "3.4"
-  domain-init: "2.1.0"
-  verify-init: "2.0.1"
+  domain-init: "2.2.0"
+  verify-init: "2.1.1"
+  native-engineering: "1.0.0"
   ui-fidelity-playbook: "1.0.3"
 rules: {}
 schemas:
