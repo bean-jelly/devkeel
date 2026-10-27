@@ -19,8 +19,8 @@ metadata:
 - `devkeel init` 建立执行入口与 `.harness/`，分发通用工作流资产
 - `domain-init` 生成「项目专属领域能力」— 基于当前项目代码扫描后定制
 
-**产出位置：** 当前项目 `docs/`、`.harness/rules/`、`.harness/skills/`、`.harness/agents/`；
-`AGENTS.md` 维护入口和读取条件。资产分层遵循当前项目执行契约。
+**产出位置：** 当前项目 `docs/`、`.harness/rules/`、`.harness/skills/`、`.harness/agents/`；`AGENTS.md` 维护入口和读取条件。
+资产分层遵循当前项目执行契约。
 
 ## Read First
 
@@ -40,10 +40,12 @@ metadata:
 - 项目技术栈升级/迁移，需要更新领域规范
 
 何时**不**使用：
+
 - 新项目应先 `devkeel init`
 
-根项目、普通子项目和 git submodule 均可执行。根项目扫描自身及跨项目关系；子项目扫描自身
-领域。先确认目标目录与配置归属，不因存在子模块终止，也不递归改写未获授权的子项目。
+根项目、普通子项目和 git submodule 均可执行。
+根项目扫描自身及跨项目关系；子项目扫描自身领域。
+先确认目标目录与配置归属，不因存在子模块终止，也不递归改写未获授权的子项目。
 
 ## Hard Rules
 
@@ -77,8 +79,8 @@ Phase 4: 收尾            → 配置更新 + 链接检查 + 生成报告
 
 先读取目标作用域的 `AGENTS.md`、相关 rules 和文档入口，定位现有 `docs/` 与配置事实源。
 读取 `references/detection-signals.md`，按信号表扫描目标目录，推断领域和技术栈。
-根项目识别共享配置与跨项目关系；各子项目按自己的 manifest、代码和已有文档识别，不用主包
-技术栈代替所有子项目。OpenSpec 任务和当前规范继续位于主仓库。
+根项目识别共享配置与跨项目关系；各子项目按自己的 manifest、代码和已有文档识别，不用主包技术栈代替所有子项目。
+OpenSpec 任务和当前规范继续位于主仓库。
 
 按实际模块与配置 owner 扫描全部信号并取并集，每个命中记录模块路径、领域、manifest/构建入口与运行目录。
 React + Electron + C++、Android + JNI/NDK 等混合模块保留各层领域和入口。
@@ -91,9 +93,11 @@ Gaia、CMake 等配置归属实际使用它们的模块；只有对应源码或�
 
 ### 1.2 用户确认与补充
 
-展示检测结果，用户确认或纠正。同时收集：
+展示检测结果，用户确认或纠正。
+同时收集：
 
-- **领域确认** — 检测结果是否准确？用户可手动指定领域标签
+- **领域确认** — 检测结果是否准确？
+  用户可手动指定领域标签
 - 团队编码风格偏好（严格/宽松）
 - 特殊架构约束（微服务/Monorepo/Monolith）
 - 关键业务领域（金融/医疗/电商/教育等 — 影响安全和合规维度权重）
@@ -105,24 +109,25 @@ Gaia、CMake 等配置归属实际使用它们的模块；只有对应源码或�
 
 ### 2.1 Baseline 维度候选
 
-| ID | 维度 | 候选产出 | subAgent 职责 |
-|----|------|------|--------------|
-| K1 | 架构知识 | docs | 按 `references/architecture-knowledge.md` 扫描结构、组件归属、通信与关键流程 |
-| R1 | 编码规范 | rule / docs | 扫描代码风格、格式化配置、lint 规则、导入习惯 |
-| R4 | 测试策略 | rule / docs | 扫描测试框架、覆盖模式、测试文件组织、mock 策略 |
-| R5 | 错误处理 | rule / docs | 扫描异常模式、日志使用、错误边界、重试策略 |
-| R6 | 命名规范 | rule / docs | 扫描文件名、变量名、组件名、常量命名模式 |
-| R14 | 依赖管理 | rule / docs | 扫描依赖策略、锁文件、版本范围、准入标准 |
-| R16 | 编码哲学 | rule / docs | 提炼团队的 anti-pattern、YAGNI、代码密度惯例 |
-| R17 | Git 工作流 | rule / docs | 扫描分支策略、commit 消息格式、PR/MR 流程 |
-| R20 | 编辑纪律 | rule / docs | 基于 surgical changes 原则：只改相关代码 |
-| A1 | 领域 Code Reviewer | agent | 基于以上扫描结果生成专属审查维度和输出规则 |
+| ID  | 维度               | 候选产出    | subAgent 职责                                                                |
+| --- | ------------------ | ----------- | ---------------------------------------------------------------------------- |
+| K1  | 架构知识           | docs        | 按 `references/architecture-knowledge.md` 扫描结构、组件归属、通信与关键流程 |
+| R1  | 编码规范           | rule / docs | 扫描代码风格、格式化配置、lint 规则、导入习惯                                |
+| R4  | 测试策略           | rule / docs | 扫描测试框架、覆盖模式、测试文件组织、mock 策略                              |
+| R5  | 错误处理           | rule / docs | 扫描异常模式、日志使用、错误边界、重试策略                                   |
+| R6  | 命名规范           | rule / docs | 扫描文件名、变量名、组件名、常量命名模式                                     |
+| R14 | 依赖管理           | rule / docs | 扫描依赖策略、锁文件、版本范围、准入标准                                     |
+| R16 | 编码哲学           | rule / docs | 提炼团队的 anti-pattern、YAGNI、代码密度惯例                                 |
+| R17 | Git 工作流         | rule / docs | 扫描分支策略、commit 消息格式、PR/MR 流程                                    |
+| R20 | 编辑纪律           | rule / docs | 基于 surgical changes 原则：只改相关代码                                     |
+| A1  | 领域 Code Reviewer | agent       | 基于以上扫描结果生成专属审查维度和输出规则                                   |
 
 K1 面向所有领域，按实际代码触点裁剪；是否生成和调查深度仍由下述范围确认决定。
 
 ### 2.2 用户选择与优先级确认
 
-**在扫描前，必须先让用户确认 baseline 范围和优先级。**
+**在扫描前，必须先让用户确认 baseline 范围和优先级。
+**
 
 展示 baseline 候选列表，用户可以：
 
@@ -131,6 +136,7 @@ K1 面向所有领域，按实际代码触点裁剪；是否生成和调查深�
 3. **补充上下文** — 对特定维度补充说明（如「测试策略重点关注集成测试」）
 
 优先级影响：
+
 - **高优先** — 深入采样关键路径、边界和例外
 - **正常** — 覆盖代表性模块及其配置
 - **低优先** — 仅核对核心事实与约束
@@ -148,12 +154,13 @@ K1 面向所有领域，按实际代码触点裁剪；是否生成和调查深�
 3. **提取模式** — 识别实际代码中的约定（不是理论最佳实践）
 4. **标记不一致** — 将冲突和建议提交 review，不把建议写成已生效约束
 5. **对比已有产物** — 按主题定位 `docs/`、rules、skills、agents，复用已有文件与事实源
-6. **分类生成** — 执行约束进入 rules；背景与示例进入 docs；可复用流程进入 skills；
-   角色职责进入 agents。按 `references/output-formats.md` 生成，并列出目标文件、依据和引用
+6. **分类生成** — 执行约束进入 rules；背景与示例进入 docs；可复用流程进入 skills；角色职责进入 agents。
+   按 `references/output-formats.md` 生成，并列出目标文件、依据和引用
 
 ### 2.4 Baseline Review
 
 汇总扫描结果，用户逐条 review：
+
 - **确认** — 直接写入
 - **修改** — 调整约定内容后写入
 - **跳过** — 本次不生成，可在后续重新运行时生成
@@ -166,8 +173,7 @@ K1 面向所有领域，按实际代码触点裁剪；是否生成和调查深�
 
 ### 3.1 维度池展示
 
-读取 `references/dimension-pool.md` 和 `references/domain-matrix.md`，基于 Phase 1 识别的领域
-过滤不适用维度，再按 Rules / Skills / Agents 三类展示可选增强项。
+读取 `references/dimension-pool.md` 和 `references/domain-matrix.md`，基于 Phase 1 识别的领域过滤不适用维度，再按 Rules / Skills / Agents 三类展示可选增强项。
 
 ### 3.2 头脑风暴：扩散
 
@@ -179,7 +185,8 @@ K1 面向所有领域，按实际代码触点裁剪；是否生成和调查深�
 
 ### 3.3 收拢：用户选择与优先级确认
 
-**在生成前，必须让用户明确选择要生成的增强项并设定优先级。**
+**在生成前，必须让用户明确选择要生成的增强项并设定优先级。
+**
 
 整理发散阶段讨论的所有候选项，向用户展示选择面板（按 Rules / Skills / Agents / 自定义分组），用户可以：
 
@@ -188,6 +195,7 @@ K1 面向所有领域，按实际代码触点裁剪；是否生成和调查深�
 - 对特定维度补充范围说明（如「安全规范重点关注 XSS」）
 
 确认规则：
+
 - 必须用户明确确认后才启动生成
 - 如果用户取消了所有增强项，跳过 Phase 3.4 直接进入 Phase 4
 
@@ -216,10 +224,11 @@ K1 面向所有领域，按实际代码触点裁剪；是否生成和调查深�
 
 ### 4.3 子模块 Skills 同步（含 git submodule 的项目）
 
-**为什么需要同步？**
+**为什么需要同步？
+**
 
-Claude Code / Cursor 等 Coding Agent 启动时，只扫描主仓库的 `.claude/skills/`（通过 symlink
-指向 `.harness/skills/`）。子模块的 `.harness/skills/` 不在扫描范围内，生成的 skills 不会自动加载。
+Claude Code / Cursor 等 Coding Agent 启动时，只扫描主仓库的 `.claude/skills/`（通过 symlink 指向 `.harness/skills/`）。
+子模块的 `.harness/skills/` 不在扫描范围内，生成的 skills 不会自动加载。
 
 同步的作用是将子模块的 skills 通过 symlink 平铺到主仓库的 `.harness/skills/`，形成完整的加载链路：
 
@@ -246,10 +255,12 @@ node .harness/skills/domain-init/scripts/sync-submodule-skills.mjs --prune    # 
 脚本自动发现所有 git submodule，无需手动配置子模块路径。
 
 **何时使用：**
+
 - 在子模块中运行了 domain-init 生成 skills 后
 - 子模块新增/删除了 skills 后
 
 **何时不使用：**
+
 - 单体项目（无 submodule）
 - 子模块没有 `.harness/skills/`
 
@@ -262,18 +273,19 @@ node .harness/skills/domain-init/scripts/sync-submodule-skills.mjs --prune    # 
 根项目和子项目执行同一流程：
 
 1. 按主题增量维护已存在的项目文档；没有对应文档时再创建 `docs/` 下的必要文件。
-2. 将项目背景、技术栈、模块职责、开发说明写入 docs；测试知识与 verify-init 共用已有测试文档，
-   缺失时使用 `docs/testing.md`。命令、门槛和参数引用实际配置或 scripts，不维护第二份值。
+2. 将项目背景、技术栈、模块职责、开发说明写入 docs；测试知识与 verify-init 共用已有测试文档，缺失时使用 `docs/testing.md`。
+   命令、门槛和参数引用实际配置或 scripts，不维护第二份值。
 3. 更新 AGENTS 的文档链接与读取条件，规则和能力通过最小触发矩阵发现；不要求全量读取 docs。
-4. 填充完成后删除该槽位成对的 `<!-- harness:user:... -->` / `<!-- /harness:user:... -->`
-   边界注释与已用完的占位提示，保留正文及相邻框架内容。未填槽位保留占位；已有正文不重加标记。
-5. 按 `references/output-formats.md` 的质量标准核对产物及规则触发范围。后续实施改变已验证的项目事实时，同步相关文档。
+4. 填充完成后删除该槽位成对的 `<!-- harness:user:... -->` / `<!-- /harness:user:... -->` 边界注释与已用完的占位提示，保留正文及相邻框架内容。
+   未填槽位保留占位；已有正文不重加标记。
+5. 按 `references/output-formats.md` 的质量标准核对产物及规则触发范围。
+   后续实施改变已验证的项目事实时，同步相关文档。
 
-| 用户槽位 | 内容 |
-|----------|------|
-| `harness:user:routing` | 任务信号到适用 rules、skills、agents 的路由 |
-| `harness:user:verification` | 开发与测试文档的链接及读取条件 |
-| `harness:user:project` | 项目概览、架构、业务边界及其他文档的链接与读取条件 |
+| 用户槽位                    | 内容                                               |
+| --------------------------- | -------------------------------------------------- |
+| `harness:user:routing`      | 任务信号到适用 rules、skills、agents 的路由        |
+| `harness:user:verification` | 开发与测试文档的链接及读取条件                     |
+| `harness:user:project`      | 项目概览、架构、业务边界及其他文档的链接与读取条件 |
 
 例如，只有对应文件已存在时，才在项目知识入口添加正文：
 
@@ -282,12 +294,12 @@ node .harness/skills/domain-init/scripts/sync-submodule-skills.mjs --prune    # 
 - 调整模块依赖时读取 [架构说明](docs/architecture.md)。
 ```
 
-写入复用 Phase 2/3 已确认的范围；新内容与迁移差异统一展示 review。已有用户内容按差异合并，
-不覆盖未知内容。项目知识入口统一使用 `project`；旧 `domain` 内容合并到 `project` 后移除旧
-槽位，不重新创建。标记已清理时按对应章节更新正文，不重复追加入口；必要入口缺失时只展示
-最小新增差异，保留执行契约。
-迁移已有正文时，先写入目标 docs 或 rules 并核对语义与链接，再将原正文替换为引用；执行约束、
-权限及失败恢复条件必须保留在可发现的执行入口。任务草案不转写为当前项目事实。
+写入复用 Phase 2/3 已确认的范围；新内容与迁移差异统一展示 review。
+已有用户内容按差异合并，不覆盖未知内容。
+项目知识入口统一使用 `project`；旧 `domain` 内容合并到 `project` 后移除旧槽位，不重新创建。
+标记已清理时按对应章节更新正文，不重复追加入口；必要入口缺失时只展示最小新增差异，保留执行契约。
+迁移已有正文时，先写入目标 docs 或 rules 并核对语义与链接，再将原正文替换为引用；执行约束、权限及失败恢复条件必须保留在可发现的执行入口。
+任务草案不转写为当前项目事实。
 
 ---
 

@@ -50,7 +50,7 @@ stack-matrix 是 Phase 1 推荐框架的权威来源。
 ## 系统 / C++ 与桌面原生桥
 
 | 信号 | 领域 | 优先检查的可执行验证位置 | 说明 |
-|------|------|---------|---------|
+|------|------|--------------------------|------|
 | CMake + C/C++ targets | cpp | CTest 注册的测试、项目已有 test target 或测试脚本 | 从实际 CMake preset/target 和运行目录确认入口；不默认安装 GoogleTest |
 | Conan + CMake 原生目标 | cpp | Conan profile/install 之后项目已有 CMake/CTest 测试入口 | 环境与构建步骤见[原生工程能力](../../native-engineering/SKILL.md) |
 | Electron/Tauri 桌面宿主 | desktop | 主进程/renderer 既有测试、应用启动与 IPC 集成入口 | 可与前端、Node addon 或独立 C++ 进程组合；桌面验证不依赖必须存在 addon |
@@ -61,9 +61,9 @@ stack-matrix 是 Phase 1 推荐框架的权威来源。
 
 ## Monorepo 处理
 
-`pnpm-workspace.yaml` / `lerna.json` / `nx.json` 命中时，按各 manifest 和测试配置识别根项目、
-共享基建与子项目。分别使用本矩阵，不用主包技术栈代替所有子包；Phase 2 确认目标范围、
-依赖 owner 与运行目录。规则和知识按作用域维护，避免重复安装与重复文档。
+`pnpm-workspace.yaml` / `lerna.json` / `nx.json` 命中时，按各 manifest 和测试配置识别根项目、共享基建与子项目。
+分别使用本矩阵，不用主包技术栈代替所有子包；Phase 2 确认目标范围、依赖 owner 与运行目录。
+规则和知识按作用域维护，避免重复安装与重复文档。
 
 ## 未命中（custom）
 
@@ -83,6 +83,7 @@ stack-matrix 是 Phase 1 推荐框架的权威来源。
 
 ## 脚手架产出路径
 
-本表给出可覆盖的框架推荐，不绑定固定 config 配方。每个技术栈的具体安装/config/示例/scripts 由 Agent 凭官方文档产出（见 `frameworks-index.md` 定位方法论 + `scaffolding-principles.md` 产出清单），推荐项可被官方文档或用户在 Phase 2 推翻。
+本表给出可覆盖的框架推荐，不绑定固定 config 配方。
+每个技术栈的具体安装/config/示例/scripts 由 Agent 凭官方文档产出（见 `frameworks-index.md` 定位方法论 + `scaffolding-principles.md` 产出清单），推荐项可被官方文档或用户在 Phase 2 推翻。
 
 custom 领域无推荐锚点，按本地证据维护共用规则与项目文档，Agent 仍可凭官方文档产出脚手架。

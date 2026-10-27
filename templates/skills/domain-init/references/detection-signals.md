@@ -6,64 +6,64 @@
 
 ## 前端
 
-| 信号 | 检测方式 | 推断领域 |
-|------|----------|----------|
-| `package.json` + react/next | 依赖扫描 | frontend-react |
-| `package.json` + vue/nuxt | 依赖扫描 | frontend-vue |
-| `package.json` + angular | 依赖扫描 | frontend-angular |
-| `package.json` + svelte/sveltekit | 依赖扫描 | frontend-svelte |
+| 信号                              | 检测方式 | 推断领域         |
+| --------------------------------- | -------- | ---------------- |
+| `package.json` + react/next       | 依赖扫描 | frontend-react   |
+| `package.json` + vue/nuxt         | 依赖扫描 | frontend-vue     |
+| `package.json` + angular          | 依赖扫描 | frontend-angular |
+| `package.json` + svelte/sveltekit | 依赖扫描 | frontend-svelte  |
 
 ## 后端
 
-| 信号 | 检测方式 | 推断领域 |
-|------|----------|----------|
-| `pom.xml` / `build.gradle` + spring | 文件+依赖 | backend-java-spring |
-| `go.mod` + gin/echo/fiber | 文件+依赖 | backend-go |
-| `go.mod`（无 Web 框架） | 文件存在 | backend-go |
-| `requirements.txt` / `pyproject.toml` + django | 文件+依赖 | backend-python-django |
+| 信号                                            | 检测方式  | 推断领域               |
+| ----------------------------------------------- | --------- | ---------------------- |
+| `pom.xml` / `build.gradle` + spring             | 文件+依赖 | backend-java-spring    |
+| `go.mod` + gin/echo/fiber                       | 文件+依赖 | backend-go             |
+| `go.mod`（无 Web 框架）                         | 文件存在  | backend-go             |
+| `requirements.txt` / `pyproject.toml` + django  | 文件+依赖 | backend-python-django  |
 | `requirements.txt` / `pyproject.toml` + fastapi | 文件+依赖 | backend-python-fastapi |
-| `package.json` + express/nestjs/koa | 依赖扫描 | backend-node |
+| `package.json` + express/nestjs/koa             | 依赖扫描  | backend-node           |
 
 ## 移动端
 
-| 信号 | 检测方式 | 推断领域 |
-|------|----------|----------|
-| `Package.swift` / `*.xcodeproj` | 文件存在 | ios-swift |
+| 信号                                                              | 检测方式       | 推断领域                                                                 |
+| ----------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------ |
+| `Package.swift` / `*.xcodeproj`                                   | 文件存在       | ios-swift                                                                |
 | `build.gradle` / `build.gradle.kts` + Android 插件或 Android 源集 | 文件+依赖/配置 | android                                                                  |
 | `build.gradle.kts` + Kotlin 插件或 Kotlin 源码                    | 文件+依赖/配置 | 不新增领域标签；记录 Kotlin 语言，Android 归属仍按 Android 插件/源集判断 |
-| `pubspec.yaml` | 文件存在 | flutter |
-| `package.json` + react-native | 依赖扫描 | react-native |
+| `pubspec.yaml`                                                    | 文件存在       | flutter                                                                  |
+| `package.json` + react-native                                     | 依赖扫描       | react-native                                                             |
 
 ## 系统/底层
 
-| 信号 | 检测方式 | 推断领域 |
-|------|----------|----------|
-| `Cargo.toml` | 文件存在 | rust |
+| 信号                                                           | 检测方式         | 推断领域                                  |
+| -------------------------------------------------------------- | ---------------- | ----------------------------------------- |
+| `Cargo.toml`                                                   | 文件存在         | rust                                      |
 | `CMakeLists.txt` / `*.vcxproj` + C/C++ 源码或原生目标          | 构建入口+源/目标 | cpp                                       |
 | `CMakeLists.txt`、Conan 配置或 CTest 配置但无对应业务源码/目标 | 构建/配置线索    | 仅记录为基础设施，不单独推断 cpp 业务模块 |
-| `*.sln` / `*.csproj` | 文件存在 | dotnet |
+| `*.sln` / `*.csproj`                                           | 文件存在         | dotnet                                    |
 
 ## 工具/库/平台
 
-| 信号 | 检测方式 | 推断领域 |
-|------|----------|----------|
-| `package.json` + `bin` 字段 | bin 入口检测 | **cli-node** |
-| `package.json` + `main`/`exports` 且无 `bin` 无前端框架 | 导出检测 | **library-node** |
-| `Cargo.toml` + `[[bin]]` | manifest 检测 | **cli-rust** |
-| `go.mod` + `main.go` 在根目录 | 文件检测 | **cli-go** |
-| `setup.py` / `pyproject.toml` + `[project.scripts]` | 入口检测 | **cli-python** |
-| `Dockerfile` / `docker-compose.yml` 为主入口 | 文件检测 | **devops-infra** |
-| `terraform/` / `*.tf` | 文件检测 | **devops-iac** |
-| `*.proto` + `buf.yaml` / `grpc` | 文件+依赖 | **sdk-grpc** |
+| 信号                                                               | 检测方式           | 推断领域                                                                   |
+| ------------------------------------------------------------------ | ------------------ | -------------------------------------------------------------------------- |
+| `package.json` + `bin` 字段                                        | bin 入口检测       | **cli-node**                                                               |
+| `package.json` + `main`/`exports` 且无 `bin` 无前端框架            | 导出检测           | **library-node**                                                           |
+| `Cargo.toml` + `[[bin]]`                                           | manifest 检测      | **cli-rust**                                                               |
+| `go.mod` + `main.go` 在根目录                                      | 文件检测           | **cli-go**                                                                 |
+| `setup.py` / `pyproject.toml` + `[project.scripts]`                | 入口检测           | **cli-python**                                                             |
+| `Dockerfile` / `docker-compose.yml` 为主入口                       | 文件检测           | **devops-infra**                                                           |
+| `terraform/` / `*.tf`                                              | 文件检测           | **devops-iac**                                                             |
+| `*.proto` + `buf.yaml` / `grpc`                                    | 文件+依赖          | **sdk-grpc**                                                               |
 | `electron` / `tauri` in dependencies                               | 依赖扫描           | **desktop**；继续扫描同一模块的前端、Node 与原生依赖，全部保留             |
 | Node-API / N-API / node-addon-api / node-gyp / CMake.js 与原生源码 | 依赖+构建入口+源码 | cpp 与宿主实际领域，分别记录 owner 与入口；Node addon 不自动归类为 desktop |
 
 ## Monorepo 检测
 
-| 信号 | 检测方式 | 处理方式 |
-|------|----------|----------|
+| 信号                                             | 检测方式 | 处理方式                                             |
+| ------------------------------------------------ | -------- | ---------------------------------------------------- |
 | `pnpm-workspace.yaml` / `lerna.json` / `nx.json` | 文件存在 | 识别共享配置与子项目边界，按已确认范围执行 Phase 2-4 |
-| 根目录 + `packages/` / `apps/` | 目录结构 | 识别共享配置与子项目边界，按已确认范围执行 Phase 2-4 |
+| 根目录 + `packages/` / `apps/`                   | 目录结构 | 识别共享配置与子项目边界，按已确认范围执行 Phase 2-4 |
 
 根项目维护自身与跨项目知识；子项目按各自技术栈维护领域知识。
 根目录同时存在 Gaia、CMake 等配置与原生/业务模块时，配置只归属其实际 owner；它不能单独构成新的业务项目。
@@ -72,15 +72,16 @@
 
 ## Git Submodule 检测
 
-| 信号 | 检测方式 | 处理方式 |
-|------|----------|----------|
+| 信号                                          | 检测方式 | 处理方式     |
+| --------------------------------------------- | -------- | ------------ |
 | `.gitmodules` / `git submodule status` 有输出 | git 命令 | 检测到子模块 |
 
 **检测到 git submodule 时的行为：**
 
-继续识别当前作用域。主仓库扫描自身与跨模块关系，子模块扫描自己的代码与配置；不把子模块
-的详细知识复制到根项目。主仓库可通过 `sync-submodule-skills.mjs` 汇聚子模块 skills，docs 和
-rules 仍由各自项目维护。发现子模块不授权递归写入，目标范围在 Phase 1 确认。
+继续识别当前作用域。
+主仓库扫描自身与跨模块关系，子模块扫描自己的代码与配置；不把子模块的详细知识复制到根项目。
+主仓库可通过 `sync-submodule-skills.mjs` 汇聚子模块 skills，docs 和 rules 仍由各自项目维护。
+发现子模块不授权递归写入，目标范围在 Phase 1 确认。
 
 ## 未命中降级策略
 

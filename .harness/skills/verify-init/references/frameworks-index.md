@@ -11,12 +11,12 @@ Agent 凭项目现状的包名，动态定位当前版本的官方文档。
 
 从项目的依赖清单中取出要安装/已声明的包名：
 
-| 生态 | manifest 位置 | 字段 |
-|------|--------|------|
-| Node.js | `package.json` | `dependencies` / `devDependencies` |
-| Python | `pyproject.toml` / `requirements*.txt` | `[project.dependencies]` / 依赖行 |
-| Go | `go.mod` | `require` 块 |
-| Rust | `Cargo.toml` | `[dependencies]` |
+| 生态              | manifest 位置                                       | 字段                                                                    |
+| ----------------- | --------------------------------------------------- | ----------------------------------------------------------------------- |
+| Node.js           | `package.json`                                      | `dependencies` / `devDependencies`                                      |
+| Python            | `pyproject.toml` / `requirements*.txt`              | `[project.dependencies]` / 依赖行                                       |
+| Go                | `go.mod`                                            | `require` 块                                                            |
+| Rust              | `Cargo.toml`                                        | `[dependencies]`                                                        |
 | Java/Kotlin       | `pom.xml` / `build.gradle` / `build.gradle.kts`     | `<dependencies>` / `dependencies {}`                                    |
 | C/C++             | `conanfile.py` / `conanfile.txt` / `CMakeLists.txt` | 实际 Conan requirements 与 CMake target；CTest 配置用于定位已有验证入口 |
 | Electron 原生模块 | `package.json` 与 `binding.gyp` / `CMakeLists.txt`  | Node-API/N-API 依赖及原生构建 target                                    |
@@ -29,7 +29,8 @@ Agent 凭项目现状的包名，动态定位当前版本的官方文档。
 
 对每个包名，按以下顺序尝试定位官方文档，任意一步成功即提取要素，无需走完全部：
 
-1. **context7 MCP（可用时加速）** — 环境装有 `plugin:context7:context7` 时，先 `resolve-library-id(包名)` 拿到库 ID，再 `query-docs(库ID, "configuration options and testing setup")` 拉配置/最佳实践文档。环境无 context7 直接跳过，不报错。
+1. **context7 MCP（可用时加速）** — 环境装有 `plugin:context7:context7` 时，先 `resolve-library-id(包名)` 拿到库 ID，再 `query-docs(库ID, "configuration options and testing setup")` 拉配置/最佳实践文档。
+   环境无 context7 直接跳过，不报错。
 2. **读取官方文档站（能力可用时）** — 从包的 registry 页面（npmjs.com / pypi.org / pkg.go.dev / crates.io）找 `homepage` 字段定位官方 docs 站，用当前平台的页面读取能力拉取配置参考页。
 3. **网页搜索（可用且前两步定位不到时）** — 搜 `"<包名> testing configuration <年份>"` 找最新实践页面，再读取命中的官方 URL。
 4. **GitHub README（兜底）** — 包的仓库 README 通常含 quickstart + 配置示例，从 registry 页面的 repository 字段或直接搜 `<包名> github` 定位。
@@ -50,14 +51,15 @@ Agent 凭项目现状的包名，动态定位当前版本的官方文档。
 
 定位步骤 2 的四条路径构成 fetch 链，优先级与可用性约定：
 
-| 环节 | 可用性 | 角色 |
-|------|--------|------|
-| context7 MCP | 可选（环境不一定装） | 加速：已有索引的库直接命中，减少页面读取次数 |
-| 页面读取 | 依当前会话能力与权限 | 读取官方文档页面 |
-| 网页搜索 | 依当前会话能力与权限 | 定位官方 URL，再读取页面 |
-| GitHub README | 页面读取可达时 | 末位兜底：包仓库的 quickstart 示例 |
+| 环节          | 可用性               | 角色                                         |
+| ------------- | -------------------- | -------------------------------------------- |
+| context7 MCP  | 可选（环境不一定装） | 加速：已有索引的库直接命中，减少页面读取次数 |
+| 页面读取      | 依当前会话能力与权限 | 读取官方文档页面                             |
+| 网页搜索      | 依当前会话能力与权限 | 定位官方 URL，再读取页面                     |
+| GitHub README | 页面读取可达时       | 末位兜底：包仓库的 quickstart 示例           |
 
-各途径均以当前会话的实际能力和权限为准；不可用时跳过，不要求安装额外插件。平台工具差异见技能入口中的按需参考。
+各途径均以当前会话的实际能力和权限为准；不可用时跳过，不要求安装额外插件。
+平台工具差异见技能入口中的按需参考。
 
 ### 全失败降级
 
@@ -65,8 +67,7 @@ Agent 凭项目现状的包名，动态定位当前版本的官方文档。
 
 - **不凭训练记忆编造 config** —— 记忆里的配置项可能对应旧版本，无法校验，编造比诚实跳过更危险
 - **跳过精确 config 产出** —— Phase 3.3 的安装/写 config/写示例/补 scripts 四步整体跳过
-- **按本地证据维护 Phase 4** —— 共用测试规则、docs 测试说明与验证 agent；标明缺失能力，
-  不写入假定存在的 config、scripts 或门槛
+- **按本地证据维护 Phase 4** —— 共用测试规则、docs 测试说明与验证 agent；标明缺失能力，不写入假定存在的 config、scripts 或门槛
 - **向用户显式提示** —— 输出「未能获取 `<框架>` 官方文档，config 请手动补」，把不确定的部分明确交还用户
 
 降级语义详见[技能入口](../SKILL.md)的 Hard Rule 4。
@@ -89,7 +90,8 @@ context7 无返回或库 ID 不匹配时，回退到可用的页面读取能力�
 
 ## 页面读取方式
 
-context7 不可用或未命中时，用当前平台的页面读取能力访问官方文档站。优先级：
+context7 不可用或未命中时，用当前平台的页面读取能力访问官方文档站。
+优先级：
 
 1. 官方 docs 站的配置参考页（如 `vitest.dev/config`、`docs.pytest.org/en/stable/reference`）
 2. 仓库 README（`raw.githubusercontent.com` 直链或 GitHub 渲染页）
@@ -99,10 +101,10 @@ context7 不可用或未命中时，用当前平台的页面读取能力访问�
 
 ## 质量标准
 
-| 标准 | 要求 |
-|------|------|
-| 来源权威 | 优先官方文档站 / GitHub README，不凭记忆或第三方博客 |
+| 标准     | 要求                                                                       |
+| -------- | -------------------------------------------------------------------------- |
+| 来源权威 | 优先官方文档站 / GitHub README，不凭记忆或第三方博客                       |
 | 版本对应 | 确认文档对应当前安装版本（核对 package.json 声明版本 vs 文档版本），非旧版 |
-| 不照搬 | 借鉴结构、深度、最佳实践，不复制官方文档全文进产出 |
-| 降级明确 | fetch 失败必须向用户提示「config 请手动补」，不静默吞错 |
-| 要素齐全 | 至少提取安装命令 + config schema + 一个示例，缺项不编造 |
+| 不照搬   | 借鉴结构、深度、最佳实践，不复制官方文档全文进产出                         |
+| 降级明确 | fetch 失败必须向用户提示「config 请手动补」，不静默吞错                    |
+| 要素齐全 | 至少提取安装命令 + config schema + 一个示例，缺项不编造                    |
