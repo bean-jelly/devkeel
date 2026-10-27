@@ -96,6 +96,9 @@ Lite / Full 使用 OpenSpec 保存共同设计和任务过程。常用入口是 
 实施、验证和归档等入口见 [OpenSpec Skills](templates/skills/openspec-new-change/SKILL.md)。
 方案确认不自动授权实施，归档也不自动授权 commit、push 或 PR。
 
+Full 中 Review 负责需求与实现对应、设计和工程契约审查；Verify 执行 tasks 的 Final Verification 计划，记录实际检查结果、实现指纹和 Review 状态。
+无专属验证约定的其他 schema 才使用官方三维核查，Full 不重复执行这套代码审查。
+
 ## 资产与平台
 
 <picture>

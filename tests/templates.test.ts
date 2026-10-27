@@ -1057,7 +1057,7 @@ describe('templates', () => {
         'openspec-archive-change': '3.3',
         'openspec-bulk-archive-change': '2.2',
         'openspec-sync-specs': '2.2',
-        'openspec-verify-change': '3.4',
+        'openspec-verify-change': '3.5',
       }
       const commandBySkill: Record<string, string> = {
         'openspec-new-change': 'new',

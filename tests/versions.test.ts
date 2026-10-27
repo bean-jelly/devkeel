@@ -109,7 +109,7 @@ describe('versions', () => {
       expect(versions.skills['openspec-archive-change']).toBe('3.3')
       expect(versions.skills['openspec-bulk-archive-change']).toBe('2.2')
       expect(versions.skills['openspec-sync-specs']).toBe('2.2')
-      expect(versions.skills['openspec-verify-change']).toBe('3.4')
+      expect(versions.skills['openspec-verify-change']).toBe('3.5')
       expect(versions.skills['domain-init']).toBe('2.2.0')
       expect(versions.skills['verify-init']).toBe('2.1.1')
       expect(versions.skills['native-engineering']).toBe('1.0.0')

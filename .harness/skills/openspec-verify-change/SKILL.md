@@ -1,16 +1,16 @@
 ---
 name: openspec-verify-change
-description: 从完整性、正确性和一致性验证实现是否符合 change artifacts，并生成适用报告。
+description: 按 change 的 schema 执行验证；Full 记录最终检查证据、实现指纹和 Review 状态，无专属验证约定的 schema 使用官方三维核查。
 license: MIT
 metadata:
   author: openspec
-  version: "3.4"
+  version: "3.5"
   upstreamVersion: "1.12.0"
   generatedBy: "1.12.0"
 ---
 
-验证实现与 specs、tasks、design 等 change artifacts 是否一致。本 skill 保留 OpenSpec 1.12.0
-官方 Verify 的三维验证框架；Full 增加 schema report、实现指纹和 Review provenance。
+按 schema 执行 change 验证。
+Full 使用 Final Verification 计划、实现指纹和 Review provenance；其他 schema 未提供专属验证约定时，保留 OpenSpec 1.12.0 官方 Verify 的三维验证框架。
 
 ## 1. 选择、状态与上下文
 
@@ -48,10 +48,14 @@ CURRENT 才能 Verify；LEGACY 先迁移，DRAFT/INVALID/STALE 回到 Brainstorm
   ```
 
   schema instruction/template 决定最终检查计划、结论和输出路径。
-- 其他 schema：执行其 artifact 图；若无专属 verify artifact，使用下面的官方三维报告并只在
-  对话中输出。
+  Full 的 `Final Verification` 是唯一执行计划；Review 负责需求与实现映射、方案/正确性/工程约束审查，Verify 只执行该计划中确定的检查，并以证据报告 PASS/FAIL/BLOCKED 和 optional 缺口。
+  不得追加官方三维映射评分报告、二次 code review 或推测出的检查。
 
-## 2. 官方三维验证框架
+- 其他 schema：优先执行其专属 verify artifact/instruction；未提供专属验证约定时，使用下面的官方三维报告并只在对话中输出。
+
+## 2. 官方三维验证框架（其他 schema fallback）
+
+仅当其他 schema 未提供专属 verify artifact/instruction 时使用本框架；Full 始终遵循其 `Final Verification` 执行计划。
 
 ### 完整性 Completeness
 
@@ -91,9 +95,8 @@ node "<skill-dir>/scripts/implementation-fingerprint.mjs" \
 
 ## 4. 执行、复算与写入
 
-按 schema instruction 执行最终计划，同时用三维框架检查遗漏。旧 Full tasks 没有 Final
-Verification 时，从明确的旧测试命令恢复并去重；没有可恢复 required 检查时询问，
-不得臆造。
+按 schema instruction 执行最终计划。
+旧 Full tasks 没有 Final Verification 时，从明确的旧测试命令恢复并去重；没有可恢复 required 检查时询问，不得臆造。
 
 从 Apply 调用时，同范围实现缺陷可以回到对应 task 做聚焦修复、邻近验证和 P0/P1 定向复审，
 然后重跑完整计划。独立 Verify 只报告，不静默修复。需要改变 design/spec/scope、遇到外部
@@ -102,6 +105,6 @@ Verification 时，从明确的旧测试命令恢复并去重；没有可恢复 
 检查后再次运行指纹脚本。若指纹变化，保留观察到的测试结果，但把 `Final Review` 写为
 `NOT_RUN`，不得把旧 review provenance 绑定到新状态。
 
-Full 按返回的 template/`resolvedOutputPath` 写入 `verify.md`，刷新 status。报告摘要应覆盖三维
-状态、CRITICAL/WARNING/SUGGESTION、未验证范围、最终结论和下一步。不得生成 retrospective、
-archive、commit、push、PR 或清理动作。
+Full 按返回的 template/`resolvedOutputPath` 写入 `verify.md`，刷新 status；摘要记录检查执行结果、未验证范围、最终结论、Final Review 状态和下一步。
+只有三维 fallback 报告才汇总三维状态与 CRITICAL/WARNING/SUGGESTION。
+不得生成 retrospective、archive、commit、push、PR 或清理动作。
