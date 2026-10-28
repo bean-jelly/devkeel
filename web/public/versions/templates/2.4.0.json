@@ -1,0 +1,36 @@
+{
+  "versions": [
+    "2.4.0"
+  ],
+  "releasedAt": {
+    "from": "2026-10-28T16:34:04+08:00"
+  },
+  "title": "新增原生工程能力并完善混合技术栈支持",
+  "archived": false,
+  "groups": [
+    {
+      "type": "feat",
+      "label": "原生工程与混合技术栈",
+      "items": [
+        {
+          "name": "原生工程能力",
+          "description": "新增 `native-engineering`，通过项目配置复用 Conan/CMake、MSVC、Android/JNI 和 Electron 原生工程的环境检查、构建、验证与依赖更新入口。"
+        },
+        {
+          "name": "混合技术栈识别与初始化",
+          "description": "`domain-init` 与 `verify-init` 按实际模块和配置归属保留全部技术栈，区分桌面宿主与原生目标，并复用各层已有的构建和测试入口。"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "label": "最终验证流程",
+      "items": [
+        {
+          "name": "Full 验证范围",
+          "description": "`openspec-verify-change` 的 Full 验证只执行 `tasks.md` 的 `Final Verification` 计划，并报告检查结果、未验证范围、实现指纹与最终审查状态。"
+        }
+      ]
+    }
+  ]
+}
